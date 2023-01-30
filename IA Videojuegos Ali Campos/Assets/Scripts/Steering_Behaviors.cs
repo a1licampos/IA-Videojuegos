@@ -92,6 +92,7 @@ public class Steering_Behaviors : MonoBehaviour
 
             case SteeringBehavior.Wander:
                 v3SteeringForce = Wander();
+                v3TargetPosition = TargetPosition;      //Drawgizmos
                 break;
 
             case SteeringBehavior.Arrive:
@@ -265,7 +266,7 @@ public class Steering_Behaviors : MonoBehaviour
         if (currentBehavior == SteeringBehavior.Wander)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(v2CircleCenter, fCircleRadius);
+            Gizmos.DrawWireSphere(v3SteeringForceAux, fCircleRadius);
         }
     }
 
