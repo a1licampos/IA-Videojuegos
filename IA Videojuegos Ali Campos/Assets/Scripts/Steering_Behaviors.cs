@@ -92,7 +92,6 @@ public class Steering_Behaviors : MonoBehaviour
 
             case SteeringBehavior.Wander:
                 v3SteeringForce = Wander();
-                v3TargetPosition = TargetPosition;      //Drawgizmos
                 break;
 
             case SteeringBehavior.Arrive:
@@ -265,8 +264,8 @@ public class Steering_Behaviors : MonoBehaviour
 
         if (currentBehavior == SteeringBehavior.Wander)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(v3SteeringForceAux, fCircleRadius);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position + v3SteeringForceAux, fCircleRadius);
         }
     }
 
@@ -328,5 +327,30 @@ public class Steering_Behaviors : MonoBehaviour
         vector.y = Mathf.Sin(angle) * len;
     }
 
+
+    /*
+     Respecto al 0.5. 
+
+    fWanderAngle += (Random.value * fAngleChange) - (fAngleChange * 0.5f);  //Buscamos un angulo aleatorio (punta menos cola) [No entiendo por que multiplicar por 0.5]
+
+    Random.value nos va a dar un número entre 0 y 1.0f, y, al multiplicarlo por tu fAngleChange (que por ahora también es 1), nos da un valor entre 0 y fAngleChange.
+    Después, a eso le restamos fAngleChange * 0.5, es decir, medio fAngleChange ¿Correcto?
+    Vamos a los extremos del caso. Si random es 0:
+    (0*fAngleChange) - (fAngleChange * 0.5f) -> 
+    0 - (fAngleChange * 0.5f) ->
+    - fAngleChange/2
+    y así queda el valor. 
+
+    Con el random = 1:
+    (1*fAngleChange) - (fAngleChange * 0.5f) -> 
+    fAngleChange - (fAngleChange * 0.5f) ->
+    + fAngleChange/2
+
+    Si te fijas, ambos tienen el mismo valor, pero uno es negativo y el otro es positivo, es decir, el rango posible de valores es [-fAngleChange/2, +fAngleChange/2], ¿Va?
+    Lo que está haciendo esa parte del -(fAngleChange * 0.5f) es desplazar el rango posible de valores desde [0.0f, fAngleChange] hacia [-fAngleChange/2, +fAngleChange/2]. 
+    
+    ¿Por qué? porque el cambio de ángulo puede hacia la izquierda (valores negativos) o hacia la derecha (valores positivos).
+     
+     */
 
 }
