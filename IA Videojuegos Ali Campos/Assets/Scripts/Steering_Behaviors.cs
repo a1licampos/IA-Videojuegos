@@ -109,7 +109,7 @@ public class Steering_Behaviors : MonoBehaviour
 
     }
 
-    private float ArriveFunction(Vector3 in_v3DesiredDirection)
+    public float ArriveFunction(Vector3 in_v3DesiredDirection)
     {
         float fDistance = in_v3DesiredDirection.magnitude;
         float fDesiredMagnitude = fMaxSpeed;
@@ -207,7 +207,7 @@ public class Steering_Behaviors : MonoBehaviour
         return Flee(v3TargetPosition);
     }
 
-    Vector3 Arrive(Vector3 in_v3TargetPosition)
+    public Vector3 Arrive(Vector3 in_v3TargetPosition)
     {
         //Check if it's in the radius
         Vector3 v3Diff = in_v3TargetPosition - transform.position;
