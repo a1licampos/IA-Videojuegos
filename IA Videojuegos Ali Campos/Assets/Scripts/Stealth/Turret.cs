@@ -13,6 +13,10 @@ public class Turret : MonoBehaviour
 
     public bool bDetected = false;
 
+    public Vector3 v3AgentPosition = Vector3.zero;
+
+    [Header("STATES")]
+    public States_Turret sStates_Turrent;
 
     void Start()
     {
@@ -22,16 +26,26 @@ public class Turret : MonoBehaviour
     Vector2 v2PlayerVector = Vector2.zero;
     void Update()
     {
-        bDetected = false;
-
-        v2PlayerVector = tPlayer.position - tHead.position;
-
-        if (Vector3.Angle(v2PlayerVector.normalized, tHead.right) < fVisionAngle * 0.5)
+        try
         {
-            if (v2PlayerVector.magnitude < fVisionDistance)
+            tPlayer = GameObject.FindGameObjectWithTag("James Bond").GetComponent<Transform>();
+
+            bDetected = false;
+
+            v2PlayerVector = tPlayer.position - tHead.position;
+
+            if (Vector3.Angle(v2PlayerVector.normalized, tHead.right) < fVisionAngle * 0.5)
             {
-                bDetected = true;
+                if (v2PlayerVector.magnitude < fVisionDistance)
+                {
+                    bDetected = true;
+                    v3AgentPosition = tPlayer.position;
+                }
             }
+
+        }catch
+        {
+            Debug.Log("Se destruyó el agente James Bond...");
         }
     }
 
@@ -45,7 +59,11 @@ public class Turret : MonoBehaviour
         v2P1 = PointForAngle(fHalfVisionAngle, fVisionDistance);
         v2P2 = PointForAngle(-fHalfVisionAngle, fVisionDistance);
 
-        Gizmos.color = bDetected ? Color.green :  Color.red;
+        if (!sStates_Turrent.bAttack)
+            Gizmos.color = sStates_Turrent.bAlert ? Color.yellow : Color.white;
+        else
+            Gizmos.color = Color.red;
+
         Gizmos.DrawLine(tHead.position, (Vector2)tHead.position + v2P1);
         Gizmos.DrawLine(tHead.position, (Vector2)tHead.position + v2P2);
 

@@ -79,7 +79,7 @@ public class Steering_Behaviors : MonoBehaviour
                 break;
 
             case SteeringBehavior.Flee:
-                v3SteeringForce = Flee(TargetPosition);
+                v3SteeringForce = Flee(TargetPosition, fMaxSpeed);
                 break;
 
             case SteeringBehavior.Pursue:
@@ -95,7 +95,7 @@ public class Steering_Behaviors : MonoBehaviour
                 break;
 
             case SteeringBehavior.Arrive:
-                v3SteeringForce = Arrive(TargetPosition);
+                v3SteeringForce = Arrive(TargetPosition, fMaxSpeed);
                 v3TargetPosition = TargetPosition;      //Drawgizmos
                 break;
         }
@@ -143,13 +143,14 @@ public class Steering_Behaviors : MonoBehaviour
         return v3SteeringForce;
     }
 
-    public Vector3 Flee(Vector3 in_v3TargetPosition)
+    public Vector3 Flee(Vector3 in_v3TargetPosition, float maxSpeed)
     {
         //Dirección deseada es punta "a donde quiero llegar" - cola "donde estoy ahorita"
         Vector3 v3DesiredDirection = transform.position - in_v3TargetPosition;
 
         //Normalized para que la magnitud de la fuerza nunca sea mayor que la maxSpeed
-        Vector3 v3DesiredVelocity = v3DesiredDirection.normalized * fMaxSpeed;
+        //Vector3 v3DesiredVelocity = v3DesiredDirection.normalized * fMaxSpeed;
+        Vector3 v3DesiredVelocity = v3DesiredDirection.normalized * maxSpeed;
 
         Vector3 v3SteeringForce = v3DesiredVelocity - myRigidbody.velocity;
 
@@ -158,7 +159,7 @@ public class Steering_Behaviors : MonoBehaviour
         return v3SteeringForce;
     }
 
-    Vector3 Pursuit(Rigidbody in_target)
+    public Vector3 Pursuit(Rigidbody in_target)
     {
         Vector3 v3TargetPosition = in_target.transform.position;
         v3TargetPosition += in_target.velocity * Time.fixedDeltaTime * fPredictionsSteps;
@@ -204,15 +205,17 @@ public class Steering_Behaviors : MonoBehaviour
         Vector3 v3TargetPosition = in_target.transform.position;
         v3TargetPosition += in_target.velocity * Time.fixedDeltaTime * fTime;
 
-        return Flee(v3TargetPosition);
+        return Flee(v3TargetPosition, fMaxSpeed);
     }
 
-    public Vector3 Arrive(Vector3 in_v3TargetPosition)
+    public Vector3 Arrive(Vector3 in_v3TargetPosition, float maxSpeed)
     {
         //Check if it's in the radius
         Vector3 v3Diff = in_v3TargetPosition - transform.position;
         float fDistance = v3Diff.magnitude;
-        float fDesiredMagnitude = fMaxSpeed;
+
+        //float fDesiredMagnitude = fMaxSpeed;
+        float fDesiredMagnitude = maxSpeed;
 
         if (fDistance < fArriveRadius)
         {

@@ -5,12 +5,15 @@ using UnityEngine;
 public class Agente_Infiltrador : Steering_Behaviors
 {
     [Header("MOUSE")]
-    public Vector3 v3MousePosition = new Vector3(0, 0, 0);
-    public Rigidbody rb;
-    public float fSpeedMax;
-    Vector3 v3SteeringForce = Vector3.zero;
-    public bool bStop;
+    public  Vector3 v3MousePosition = Vector3.zero;
+    private Vector3 v3SteeringForce = Vector3.zero;
 
+    public Rigidbody rb;
+
+    public float fSpeedMax;
+    public float fSpeed;
+
+    public bool bStop;
 
     void Start()
     {
@@ -49,7 +52,7 @@ public class Agente_Infiltrador : Steering_Behaviors
             && 
             bStop)
         {
-            v3SteeringForce = Arrive(v3MousePosition);
+            v3SteeringForce = Arrive(v3MousePosition, fSpeed);
 
             rb.AddForce(v3SteeringForce, ForceMode.Acceleration);
 
@@ -64,7 +67,15 @@ public class Agente_Infiltrador : Steering_Behaviors
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(v3MousePosition, fArriveRadius);
+        Gizmos.DrawWireSphere(v3MousePosition, 1f);
+
+        //Dibujamos una línea de la velocidad
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + myRigidbody.velocity);
+
+        //Ahora dibujamos una línea de la fuerza
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(transform.position, transform.position + v3SteeringForce);
     }
 
 }
