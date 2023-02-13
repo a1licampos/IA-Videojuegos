@@ -16,32 +16,28 @@ public class Moving : Steering_Behaviors
     public float fSpeedMax;
     public float fSpeed;
 
-    public bool one = true;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool bOne = true;        //Nos ayuda a pasar del waypoint 0 al 1
+    public bool bNone = false;      //Nos ayuda a quedarnos en el centro (0,0,0) cuando no hay waypoints
 
     private void Update()
     {
-        if(sMousePoint_Creator.lWayPoints.Count == 2 && one)
+        if(sMousePoint_Creator.lWayPoints.Count == 2 && bOne)       //Esta comprobacion nos ayuda a mover al agente al waypoint 1 cuando solo teníamos el waypoint 0
         {
-            one = false;
+            bOne = false;                                           //Solo se hace una vez esta comprobacion
             iWayPoint++;
         }
 
-        if(sMousePoint_Creator.lWayPoints.Count == 1)
+        if(sMousePoint_Creator.lWayPoints.Count == 1)               //Si solo tenemos el waypoint 0 no queremos que siga en el centro (0,0,0)
         {
-            one = true;
+            bOne = true;
+            bNone = false;
         }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (sMousePoint_Creator.lWayPoints.Count > 0)
+        if (sMousePoint_Creator.lWayPoints.Count > 0)               //Si tenemos minimo un waypoint hacemos un Arrive hasta EL
         {
             v3SteeringForce = Arrive(sMousePoint_Creator.lWayPoints[iWayPoint].transform.position, fSpeed);
 
@@ -49,35 +45,28 @@ public class Moving : Steering_Behaviors
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, fSpeedMax * Time.fixedDeltaTime);
         }
-        //else
-        //{
-        //    v3SteeringForce = Arrive(new Vector3(0,0,0), fSpeed);
 
-        //    rb.AddForce(v3SteeringForce, ForceMode.Acceleration);
+        if (bNone)                                                  //Si NO tenemos un waypoint hacemos Arrive hasta el centro
+        {
+            v3SteeringForce = Arrive(new Vector3(0, 0, 0), fSpeed);
 
-        //    rb.velocity = Vector3.ClampMagnitude(rb.velocity, fSpeedMax * Time.fixedDeltaTime);
-        //}
+            rb.AddForce(v3SteeringForce, ForceMode.Acceleration);
+
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, fSpeedMax * Time.fixedDeltaTime);
+        }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)                     //Cuando hacemos collision con el waypoint sumamos para el siguiente o regresamos al principio
     {
-        //if(other.gameObject == sMousePoint_Creator.lWayPoints[iWayPoint + 1])
-        //{
-        //    if (sMousePoint_Creator.lWayPoints.Count > 0)
-        //    {
-        if (iWayPoint < sMousePoint_Creator.lWayPoints.Count - 1)
+        if (iWayPoint < sMousePoint_Creator.lWayPoints.Count - 1)   //Comprobamos que no vamos a exceder el indice de la lista
         {
-            if (other.gameObject == sMousePoint_Creator.lWayPoints[iWayPoint + 1].gameObject)
-                iWayPoint++;
+            if (other.gameObject == sMousePoint_Creator.lWayPoints[iWayPoint].gameObject)   //Si el objetos con el que colisionamos es el waypoint con el indice objetivo
+                iWayPoint++;                                                                //Vamos al siguiente waypoint
         }
         else
         {
-            if (other.gameObject == sMousePoint_Creator.lWayPoints[sMousePoint_Creator.lWayPoints.Count - 1].gameObject)
-                iWayPoint *= 0;
+            if (other.gameObject == sMousePoint_Creator.lWayPoints[sMousePoint_Creator.lWayPoints.Count - 1].gameObject)    //Si llegamos al utlimo waypoint
+                iWayPoint *= 0;                                                                                             //Volvemos al principio
         }
-
-        //    }
-            
-        //}
     }
 }

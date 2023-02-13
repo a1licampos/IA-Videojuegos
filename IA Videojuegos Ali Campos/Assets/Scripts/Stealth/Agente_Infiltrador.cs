@@ -15,14 +15,9 @@ public class Agente_Infiltrador : Steering_Behaviors
 
     public bool bStop;
 
-    void Start()
-    {
-    }
-
     void Update()
     {
-
-        //Moviendo James Bond "Agent Infiltrate"
+        //Moviendo a James Bond "Agent Infiltrate" hacia el click del mouse
         if (Input.GetMouseButtonDown(0))
         {
             v3MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -36,7 +31,7 @@ public class Agente_Infiltrador : Steering_Behaviors
     //https://answers.unity.com/questions/50391/how-to-round-a-float-to-2-dp.html
     private void FixedUpdate()
     {
-        v3MousePosition.z = 0.0f;
+        v3MousePosition.z = 0.0f;       //Actualizamos la Z del click porque estamos en 2D
 
         if (
             //Sacamos dos decimales de la posicion para detenerlo
@@ -50,7 +45,7 @@ public class Agente_Infiltrador : Steering_Behaviors
             Mathf.Round(v3MousePosition.y * 100) / 100)
 
             && 
-            bStop)
+            bStop)                      //Cuando hacemos un click, se realiza un Arrive hasta la posicion del mismo
         {
             v3SteeringForce = Arrive(v3MousePosition, fSpeed);
 
@@ -59,13 +54,14 @@ public class Agente_Infiltrador : Steering_Behaviors
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, fSpeedMax * Time.fixedDeltaTime);
 
         }
-        else
-            bStop = true;
+        else                            //Una vez que llegamos aproximadamente a la misma posicion
+            bStop = true;               //Detenemos el Arrive
 
     }
 
     private void OnDrawGizmos()
     {
+        //Dibujamos la posicion objetivo
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(v3MousePosition, 1f);
 

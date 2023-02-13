@@ -18,27 +18,24 @@ public class Turret : MonoBehaviour
     [Header("STATES")]
     public States_Turret sStates_Turrent;
 
-    void Start()
-    {
-        
-    }
-
     Vector2 v2PlayerVector = Vector2.zero;
+
+
     void Update()
     {
         try
         {
-            tPlayer = GameObject.FindGameObjectWithTag("James Bond").GetComponent<Transform>();
+            tPlayer = GameObject.FindGameObjectWithTag("James Bond").GetComponent<Transform>();     //Buscamos la posicion del agente
 
             bDetected = false;
 
-            v2PlayerVector = tPlayer.position - tHead.position;
+            v2PlayerVector = tPlayer.position - tHead.position;                                     //Punta menos cola
 
-            if (Vector3.Angle(v2PlayerVector.normalized, tHead.right) < fVisionAngle * 0.5)
+            if (Vector3.Angle(v2PlayerVector.normalized, tHead.right) < fVisionAngle * 0.5)         //Comprobamos que el agente no este dentro del campo de vision
             {
                 if (v2PlayerVector.magnitude < fVisionDistance)
                 {
-                    bDetected = true;
+                    bDetected = true;                                                               //Entro en el campo de vision
                     v3AgentPosition = tPlayer.position;
                 }
             }
@@ -50,27 +47,31 @@ public class Turret : MonoBehaviour
     }
 
     private Vector2 v2P1, v2P2;
+    private float fHalfVisionAngle;
     private void OnDrawGizmos()
     {
         if (fVisionAngle <= 0f) return;
 
-        float fHalfVisionAngle = fVisionAngle * 0.5f;
+        //Divimos el cono en dos para trabajar mejor
+        fHalfVisionAngle = fVisionAngle * 0.5f;
 
-        v2P1 = PointForAngle(fHalfVisionAngle, fVisionDistance);
-        v2P2 = PointForAngle(-fHalfVisionAngle, fVisionDistance);
+        v2P1 = PointForAngle(fHalfVisionAngle, fVisionDistance);    //La mitad del cono
+        v2P2 = PointForAngle(-fHalfVisionAngle, fVisionDistance);   //La mitad del otro cono
 
+        //Estado normal al estado de ataque
         if (!sStates_Turrent.bAttack)
             Gizmos.color = sStates_Turrent.bAlert ? Color.yellow : Color.white;
         else
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.red;   //Estado de ataque
 
+        //Dibujamos el cono de vision completo
         Gizmos.DrawLine(tHead.position, (Vector2)tHead.position + v2P1);
         Gizmos.DrawLine(tHead.position, (Vector2)tHead.position + v2P2);
 
         Gizmos.DrawRay(tHead.position, tHead.right * 4f);
     }
 
-    Vector3 PointForAngle(float fAngle, float fDistance)
+    Vector3 PointForAngle(float fAngle, float fDistance)           //Creamos el cono a la distancia establecida
     {
         return tHead.TransformDirection
             (

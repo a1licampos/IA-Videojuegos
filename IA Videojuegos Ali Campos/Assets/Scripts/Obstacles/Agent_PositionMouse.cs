@@ -19,16 +19,10 @@ public class Agent_PositionMouse : Steering_Behaviors
 
     public Rigidbody rb;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
-        //Posicion Objetivo
+        //Posicion Objetivo a traves del click del mouse
         if (Input.GetMouseButtonDown(0))
         {
             v3MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -37,9 +31,9 @@ public class Agent_PositionMouse : Steering_Behaviors
 
     private void FixedUpdate()
     {
-        v3MousePosition.z = 0.0f;
+        v3MousePosition.z = 0.0f;   //Actulizamos el z del click porque estamos en 2D
 
-        if (bArrive)
+        if (bArrive)                //Hacemos un Arrive a la posicion del click
         {
             v3SteeringForce = Arrive(v3MousePosition, fSpeed);
 
@@ -47,7 +41,7 @@ public class Agent_PositionMouse : Steering_Behaviors
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, fSpeedMax * Time.fixedDeltaTime);
         }
-        else
+        else                        //Hacemos un Flee al obstaculo
         {
             v3SteeringForce = Flee(tObstaclePosition, fSpeed);
 
@@ -60,23 +54,24 @@ public class Agent_PositionMouse : Steering_Behaviors
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Obstacle"))
+        if(other.gameObject.CompareTag("Obstacle"))     //Si hacemos trigger con un obstaculo
         {
-            tObstaclePosition = other.gameObject.GetComponent<Transform>().position;
-            bArrive = false;
+            tObstaclePosition = other.gameObject.GetComponent<Transform>().position;    //Obtemos su posicion
+            bArrive = false;                            //Desactivamos el Arrive al objetivo
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Obstacle"))
+        if (other.gameObject.CompareTag("Obstacle"))    //Cuando salimos de su rango
         {
-            bArrive = true;
+            bArrive = true;                             //Volvemos a hacer el arrive al click
         }
     }
 
     private void OnDrawGizmos()
     {
+        //Dibujamos la posicion objetivo
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(v3MousePosition, 1f);
 

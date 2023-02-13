@@ -21,7 +21,7 @@ public class Turret_Rotate : MonoBehaviour
     //Nuestro Guardia gira con ángulos aleatorios cada x tiempo
     void Update()
     {
-        if (!bAlert)                            //Comprobamos que no este en estado alerta
+        if (!bAlert)                                //Comprobamos que no este en estado alerta
         {
             if (fTime > 0)
             {
