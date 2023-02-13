@@ -935,8 +935,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b83d0c89cad1d48a0413a7adb8ae66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gAgent: {fileID: 2122294287}
-  gAgente_Prefab: {fileID: 7475083488319339228, guid: 214d48fd7d577f0409ee0f9dcc2a7e48, type: 3}
+  goAgent: {fileID: 2122294287}
+  goAgente_Prefab: {fileID: 7475083488319339228, guid: 214d48fd7d577f0409ee0f9dcc2a7e48, type: 3}
   bTouched: 0
   bCreate: 0
   fTimeBase_Destroy: 4
