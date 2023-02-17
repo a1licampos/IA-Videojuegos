@@ -17,10 +17,21 @@ public class Node
 
     //public List<Edge> Neighbors;    
     public Node Parent;
-    public float fTerrainCost; 
 
     //Este es para a* y djikstra
     public float g_Cost;            //Que costo tiene llegar al nodo
+    public float fTerrainCost;
+    public bool bWalkable;
+
+    public Node(int in_x, int in_y)
+    {
+        this.x = in_x;
+        this.y = in_y;
+        this.Parent = null;
+        this.g_Cost = int.MaxValue;
+        this.fTerrainCost = 1;
+        this.bWalkable = true;
+    }
 }
 
 public class Graph
@@ -33,27 +44,49 @@ public class ClassGrid
     public int iHeight = 10;
     public int iWidth = 10;
 
+    //Dibujar el grid
+    private float fTileSize;
+    private Vector3 v3OriginPosition;
+
     public Node[,] Nodes;
 
-    public ClassGrid(int in_Height, int in_Width)
+    public bool bShowDebug = true;
+
+    //Constructor
+    public ClassGrid(int in_Height, int in_Width, float in_fTileSize = 10.0f, Vector3 in_v3OriginPosition = default)
     {
         iHeight = in_Height;
         iWidth = in_Width;
 
+        InitGrid();
+
+        //Con esta variable vamos a crear objetos de tipos textMesh
+        this.fTileSize = in_fTileSize;
+        this.v3OriginPosition = in_v3OriginPosition;
+
+        if(bShowDebug)
+        {
+            TextMesh[,] debugTextArray = new TextMesh[iHeight, iWidth];
+
+            for (int y = 0; y < iHeight; y++)
+            {
+                for (int x = 0; x < iWidth; x++)
+                {
+                    //debugTextArray[y, x] = new TextMesh(x, y);
+                }
+            }
+        }
+    }
+
+    public void InitGrid()
+    {
         Nodes = new Node[iHeight, iWidth];
 
-        for(int y = 0; y < iHeight; y++)
+        for (int y = 0; y < iHeight; y++)
         {
             for (int x = 0; x < iWidth; x++)
             {
-                Nodes[y, x].x = x;
-                Nodes[y, x].y = y;
-                Nodes[y, x].Parent = null;
-                Nodes[y, x].g_Cost = int.MaxValue;
-                Nodes[y, x].fTerrainCost = 1;
-
-                //Nodes[y, x].Neighbors = new List<Edge>();
-                //Nodes[y, x].Neighbors.Add();
+                Nodes[y, x] = new Node(x, y);
             }
         }
     }
@@ -79,11 +112,11 @@ public class ClassGrid
         while(OpenList.Count > 0)
         {
             //Mientras haya nodos en la lista abierta, vamos a buscar un camino
-
             //Obtenemos el primer nodo de la lista abierta
             Node currentNode = OpenList.Pop();
             Debug.Log("Current Node is: " + currentNode.x + ", " + currentNode.y);
 
+            //Checamos si llegamos al destino
             if(currentNode == EndNode)
             {
                 //Encontramos un camino.
@@ -97,6 +130,8 @@ public class ClassGrid
 
             //Vamos a visitar a todos sus vecinos
             List<Node> currentNeighbors = GetNighborts(currentNode);
+
+            /*
             foreach(Node neighbors in currentNeighbors)
             {
                 if (ClosedList.Contains(neighbors))
@@ -105,6 +140,18 @@ public class ClassGrid
                 //Si no lo contiene, entonces lo agregamos a la lista
                 neighbors.Parent = currentNode;
                 OpenList.Push(neighbors);
+            }
+            */
+
+            //Meterlos a la pila en el orden inverso para que al sacarlos nos den el orden "normal"
+            for (int x = currentNeighbors.Count - 1; x >= 0; x--)
+            {
+                //Solo queremos nodos que no estén en la lista cerrada (la cerrada contiene nodos ya visitados)
+                if(currentNeighbors[x].bWalkable && !ClosedList.Contains(currentNeighbors[x]))
+                {
+                    currentNeighbors[x].Parent = currentNode;
+                    OpenList.Push(currentNeighbors[x]);
+                }
             }
         }
 
@@ -120,11 +167,9 @@ public class ClassGrid
         {
             return Nodes[y, x];
         }
-        else
-        {
-            Debug.LogError("Invalid coordinates in DeepthFirstSearch");
-            return null;
-        }
+
+        return null;
+        
     }
 
     public List<Node> GetNighborts(Node in_currentNode)
@@ -178,6 +223,30 @@ public class ClassGrid
         out_Path.Reverse();
 
         return out_Path;
+    }
+
+
+
+    public static TextMesh CreateWorldText(string in_text, Transform in_parent = null,
+                                           Vector3 in_localPosition = default,
+                                           int in_iFontSize = 32, Color in_color = default,
+                                           TextAnchor in_textAnchor = TextAnchor.UpperLeft, TextAlignment in_textAligment = TextAlignment.Left)
+    {
+        if (in_color == null) in_color = Color.white;
+
+        GameObject goMyObject = new GameObject(in_text, typeof(TextMesh));
+
+        goMyObject.transform.parent = in_parent;
+        goMyObject.transform.localPosition = in_localPosition;
+
+        TextMesh myTM = goMyObject.GetComponent<TextMesh>();
+        myTM.text = in_text;
+        myTM.anchor = in_textAnchor;
+        myTM.alignment = in_textAligment;
+        myTM.fontSize = in_iFontSize;
+        myTM.color = in_color;
+
+        return myTM;
     }
 }
 
