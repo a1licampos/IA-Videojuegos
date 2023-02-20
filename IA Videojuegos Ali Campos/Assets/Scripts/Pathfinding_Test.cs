@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Pathfinding_Test : MonoBehaviour
 {
+    public Transform t;
     // Start is called before the first frame update
     void Start()
     {

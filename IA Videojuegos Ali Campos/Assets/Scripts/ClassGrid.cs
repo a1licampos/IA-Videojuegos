@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Edge
 {
@@ -32,6 +33,11 @@ public class Node
         this.fTerrainCost = 1;
         this.bWalkable = true;
     }
+
+    public override string ToString()
+    {
+        return x.ToString() + ", " + y.ToString();
+    }
 }
 
 public class Graph
@@ -49,8 +55,11 @@ public class ClassGrid
     private Vector3 v3OriginPosition;
 
     public Node[,] Nodes;
+    public TextMesh[,] debugTextArray;
 
     public bool bShowDebug = true;
+
+    public GameObject debugGO = null;
 
     //Constructor
     public ClassGrid(int in_Height, int in_Width, float in_fTileSize = 10.0f, Vector3 in_v3OriginPosition = default)
@@ -66,15 +75,27 @@ public class ClassGrid
 
         if(bShowDebug)
         {
-            TextMesh[,] debugTextArray = new TextMesh[iHeight, iWidth];
+            debugGO = new GameObject("GridDebugParent");
+
+            debugTextArray = new TextMesh[iHeight, iWidth];
 
             for (int y = 0; y < iHeight; y++)
             {
                 for (int x = 0; x < iWidth; x++)
                 {
-                    //debugTextArray[y, x] = new TextMesh(x, y);
+                    debugTextArray[y, x] = CreateWorldText(Nodes[x, y].ToString(),
+                                                           debugGO.transform,
+                                                           GetWorldPosition(x, y) + new Vector3(fTileSize * 0.5f, fTileSize * 0.5f),
+                                                           30,
+                                                           Color.white,
+                                                           TextAnchor.MiddleCenter);
+                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
+                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                 }
             }
+
+            Debug.DrawLine(GetWorldPosition(0, iHeight), GetWorldPosition(iWidth, iHeight), Color.white, 100f);
+            Debug.DrawLine(GetWorldPosition(iWidth, 0), GetWorldPosition(iWidth, iHeight), Color.white, 100f);
         }
     }
 
@@ -123,7 +144,16 @@ public class ClassGrid
                 Debug.Log("Camino encontrado");
 
                 //Necesitamos construir ese camino. Para eso hacemos backtracking
-                return Backtrack(currentNode);
+                List<Node> path = Backtrack(currentNode);
+                EnumeratePath(path);
+
+                return path;
+            }
+
+            //Otra posible solución, con caminos pequeños
+            if(ClosedList.Contains(currentNode))
+            {
+                continue;
             }
 
             ClosedList.Add(currentNode);
@@ -131,23 +161,14 @@ public class ClassGrid
             //Vamos a visitar a todos sus vecinos
             List<Node> currentNeighbors = GetNighborts(currentNode);
 
-            /*
-            foreach(Node neighbors in currentNeighbors)
-            {
-                if (ClosedList.Contains(neighbors))
-                    continue;
-
-                //Si no lo contiene, entonces lo agregamos a la lista
-                neighbors.Parent = currentNode;
-                OpenList.Push(neighbors);
-            }
-            */
 
             //Meterlos a la pila en el orden inverso para que al sacarlos nos den el orden "normal"
             for (int x = currentNeighbors.Count - 1; x >= 0; x--)
             {
                 //Solo queremos nodos que no estén en la lista cerrada (la cerrada contiene nodos ya visitados)
-                if(currentNeighbors[x].bWalkable && !ClosedList.Contains(currentNeighbors[x]))
+                if(currentNeighbors[x].bWalkable 
+                  /* && !OpenList.Contains(currentNeighbors[x])*/       //Otra posible solución, para caminos más grandes
+                   && !ClosedList.Contains(currentNeighbors[x]))
                 {
                     currentNeighbors[x].Parent = currentNode;
                     OpenList.Push(currentNeighbors[x]);
@@ -247,6 +268,28 @@ public class ClassGrid
         myTM.color = in_color;
 
         return myTM;
+    }
+
+    public Vector3 GetWorldPosition(int x, int y)
+    {
+        //Nos regresa la posición en mundo del tile/cuadro especificado por X y Y.
+        //Por eso lo multiplicamos por el fTileSize
+        //(dado que tienen lo mismo de alto y ancho cada cuadro)
+        //y finalmente sumamos la posición de origen del grid
+        return new Vector3(x, y) * fTileSize + v3OriginPosition;
+    }
+
+    //Enumera un camino en el orden que tienen y lo muestra en los debugTextArray
+    public void EnumeratePath(List<Node> in_path)
+    {
+        int iCounter = 0;
+        foreach(Node n in in_path)
+        {
+            iCounter++;
+            debugTextArray[n.y, n.x].text = n.ToString()
+                                            + Environment.NewLine + "step: "
+                                            + iCounter.ToString();
+        }
     }
 }
 
