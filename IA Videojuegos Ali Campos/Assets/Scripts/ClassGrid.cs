@@ -159,7 +159,7 @@ public class ClassGrid
             ClosedList.Add(currentNode);
 
             //Vamos a visitar a todos sus vecinos
-            List<Node> currentNeighbors = GetNighborts(currentNode);
+            List<Node> currentNeighbors = GetNeighbors(currentNode);
 
 
             //Meterlos a la pila en el orden inverso para que al sacarlos nos den el orden "normal"
@@ -181,6 +181,156 @@ public class ClassGrid
         return null;
     }
 
+    public List<Node> BreadthFirstSearch(int in_startX, int in_startY, int in_endX, int in_endY)
+    {
+
+        Node StartNode = GetNode(in_startY, in_startX);
+        Node EndNode = GetNode(in_endY, in_endX);
+
+        if (StartNode == null || EndNode == null)
+        {
+            Debug.LogError("Invalid coordinates in DeepthFirstSearch");
+            return null;
+        }
+
+        PriorityQueue OpenList = new PriorityQueue();
+        List<Node> ClosedList = new List<Node>();
+
+        OpenList.Add(StartNode);
+
+        //Prioridad
+        int iP = 0; 
+
+        while (OpenList.Count > 0)
+        {
+            //Mientras haya nodos en la lista abierta, vamos a buscar un camino
+            //Obtenemos el primer nodo de la lista abierta
+            Node currentNode = OpenList.Dequeue();
+            Debug.Log("Current Node is: " + currentNode.x + ", " + currentNode.y);
+
+            //Checamos si llegamos al destino
+            if (currentNode == EndNode)
+            {
+                //Encontramos un camino.
+                Debug.Log("Camino encontrado");
+
+                //Necesitamos construir ese camino. Para eso hacemos backtracking
+                List<Node> path = Backtrack(currentNode);
+                EnumeratePath(path);
+
+                return path;
+            }
+
+            //Otra posible solución, con caminos pequeños
+            if (ClosedList.Contains(currentNode))
+            {
+                continue;
+            }
+
+            ClosedList.Add(currentNode);
+
+            //Vamos a visitar los vecinos de la derecha y arriba
+            List<Node> currentNeighbors = GetNeighbors(currentNode);
+
+            foreach (Node neighbor in currentNeighbors)
+            {
+                if (ClosedList.Contains(neighbor))
+                    continue;
+
+                //Si no lo contiene, entonces lo agregamos a la lista Abierta
+                neighbor.Parent = currentNode;
+
+                //Lo mandamos a llamar para cada vecino
+                OpenList.Insert(iP, neighbor);
+                //Ajustamos la prioridad, para que cada nuevo que entre sea añada al último
+                iP++;
+            }
+
+            string RemainingNodes = "Nodes in open list are: ";
+            
+            for(int i = 0; i < OpenList.Count; i++)
+                RemainingNodes += "(" + OpenList.GetAt(i).x + ", " + OpenList.GetAt(i).y + ") // ";
+
+            Debug.Log(RemainingNodes);
+
+        }
+
+        Debug.LogError("No path found between start and end.");
+
+        return null;
+    }
+
+    public List<Node> BestFirstSearch(int in_startX, int in_startY, int in_endX, int in_endY)
+    {
+
+        Node StartNode = GetNode(in_startY, in_startX);
+        Node EndNode = GetNode(in_endY, in_endX);
+
+        if (StartNode == null || EndNode == null)
+        {
+            Debug.LogError("Invalid coordinates in BestFirstSearch");
+            return null;
+        }
+
+        PriorityQueue OpenList = new PriorityQueue();
+        List<Node> ClosedList = new List<Node>();
+
+        OpenList.Add(StartNode);
+
+        while (OpenList.Count > 0)
+        {
+            //Mientras haya nodos en la lista abierta, vamos a buscar un camino
+            //Obtenemos el primer nodo de la lista abierta
+            Node currentNode = OpenList.Dequeue();
+            Debug.Log("Current Node is: " + currentNode.x + ", " + currentNode.y);
+
+            //Checamos si llegamos al destino
+            if (currentNode == EndNode)
+            {
+                //Encontramos un camino.
+                Debug.Log("Camino encontrado");
+
+                //Necesitamos construir ese camino. Para eso hacemos backtracking
+                List<Node> path = Backtrack(currentNode);
+                EnumeratePath(path);
+
+                return path;
+            }
+
+            //Checamos si ya está en la lista cerrada
+            if (ClosedList.Contains(currentNode))
+            {
+                continue;
+            }
+
+            ClosedList.Add(currentNode);
+
+            //Vamos a visitar a todos sus vecinos
+            List<Node> currentNeighbors = GetNeighbors(currentNode);
+
+            foreach (Node neighbor in currentNeighbors)
+            {
+                if (ClosedList.Contains(neighbor))
+                    continue;
+
+                //Si no lo contiene, entonces lo agregamos a la lista Abierta
+                neighbor.Parent = currentNode;
+
+                int dist = GetDistance(neighbor, EndNode);
+                Debug.Log("dist between: " + neighbor.x + ", " + neighbor.y + " and goal is: " + dist);
+
+                neighbor.g_Cost = dist;
+
+                //Lo mandamos a llamar para cada vecino
+                OpenList.Insert(dist, neighbor);
+            }
+        }
+
+        Debug.LogError("No path found between start and end.");
+
+        return null;
+    }
+
     public Node GetNode(int x, int y)
     {
         //Checamos si las coordenadas dentro de nuestra cuadricula se repitre
@@ -193,7 +343,7 @@ public class ClassGrid
         
     }
 
-    public List<Node> GetNighborts(Node in_currentNode)
+    public List<Node> GetNeighbors(Node in_currentNode)
     {
         List<Node> out_Neighbors = new List<Node>();
 
@@ -228,7 +378,6 @@ public class ClassGrid
         return out_Neighbors;
     }
 
-
     public List<Node> Backtrack(Node in_node)
     {
         List<Node> out_Path = new List<Node>();
@@ -246,7 +395,13 @@ public class ClassGrid
         return out_Path;
     }
 
-
+    //Euclidiana (hasta el momento)
+    public int GetDistance(Node in_a, Node in_b)
+    {
+        int x_diff = (in_a.x - in_b.x);
+        int y_diff = (in_b.y - in_a.y);
+        return (int) Mathf.Sqrt(Mathf.Pow(x_diff, 2) + Mathf.Pow(y_diff, 2));
+    }
 
     public static TextMesh CreateWorldText(string in_text, Transform in_parent = null,
                                            Vector3 in_localPosition = default,

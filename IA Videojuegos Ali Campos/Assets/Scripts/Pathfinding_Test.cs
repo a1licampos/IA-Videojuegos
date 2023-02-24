@@ -9,7 +9,14 @@ public class Pathfinding_Test : MonoBehaviour
     void Start()
     {
         ClassGrid myTest = new ClassGrid(5, 5);
-        myTest.DepthFirstSearch(0, 0, 4, 4);
+        //myTest.DepthFirstSearch(0, 0, 4, 4);
+        //myTest.BestFirstSearch(0, 0, 2, 0);
+
+        //TAREA
+        //Objetivo: 0,0 a 2,2
+        myTest.BreadthFirstSearch(0, 0, 2, 2);
+        //Objetivo: 2,2 a 1,1
+        //myTest.BreadthFirstSearch(2, 2, 1, 1);
     }
 
     // Update is called once per frame
