@@ -15,8 +15,12 @@ public class Pathfinding_Test : MonoBehaviour
         //TAREA
         //Objetivo: 0,0 a 2,2
         myTest.BreadthFirstSearch(0, 0, 2, 2);
+
         //Objetivo: 2,2 a 1,1
         //myTest.BreadthFirstSearch(2, 2, 1, 1);
+
+        //No hay camino (test)
+        //myTest.BreadthFirstSearch(0, 0, -1, -1);
     }
 
     // Update is called once per frame

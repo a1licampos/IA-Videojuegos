@@ -36,7 +36,7 @@ public class Node
 
     public override string ToString()
     {
-        return x.ToString() + ", " + y.ToString();
+        return y.ToString() + ", " + x.ToString();
     }
 }
 
@@ -189,17 +189,17 @@ public class ClassGrid
 
         if (StartNode == null || EndNode == null)
         {
-            Debug.LogError("Invalid coordinates in DeepthFirstSearch");
+            Debug.LogError("Invalid coordinates in BreadthFirstSearch");
             return null;
         }
 
-        PriorityQueue OpenList = new PriorityQueue();
+        Queue<Node> OpenList = new Queue<Node>();
         List<Node> ClosedList = new List<Node>();
 
-        OpenList.Add(StartNode);
+        OpenList.Enqueue(StartNode);
 
         //Prioridad
-        int iP = 0; 
+        //int iP = 0; 
 
         while (OpenList.Count > 0)
         {
@@ -241,15 +241,20 @@ public class ClassGrid
                 neighbor.Parent = currentNode;
 
                 //Lo mandamos a llamar para cada vecino
-                OpenList.Insert(iP, neighbor);
+                //OpenList.Insert(iP, neighbor);
+                OpenList.Enqueue(neighbor);
+
                 //Ajustamos la prioridad, para que cada nuevo que entre sea añada al último
-                iP++;
+                //iP++;
             }
 
             string RemainingNodes = "Nodes in open list are: ";
             
-            for(int i = 0; i < OpenList.Count; i++)
-                RemainingNodes += "(" + OpenList.GetAt(i).x + ", " + OpenList.GetAt(i).y + ") // ";
+            //for(int i = 0; i < OpenList.Count; i++)
+            //    RemainingNodes += "(" + OpenList.GetAt(i).x + ", " + OpenList.GetAt(i).y + ") // ";
+
+            foreach (Node n in OpenList)
+                RemainingNodes += "(" + n.x + ", " + n.y + ") // ";
 
             Debug.Log(RemainingNodes);
 
