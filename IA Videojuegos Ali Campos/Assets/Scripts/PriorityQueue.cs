@@ -33,6 +33,11 @@ public class PriorityQueue
         nodes.Add(in_node);
     }
 
+    public void Remove(Node in_node)
+    {
+        nodes.Remove(in_node);
+    }
+
 
     //Desencolar, atender a la primera petición de la cola
     public Node Dequeue()
