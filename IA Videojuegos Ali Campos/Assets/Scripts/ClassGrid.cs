@@ -21,8 +21,8 @@ public class Node
 
     //Este es para a* y djikstra
     public float g_Cost;            //El costo de haber llegado a este nodo (terraincost + g_Cost del padre)
-    public float f_Cost;            //El costo Final de este nodo, el cual es g_Cost + h_Cost
     public float h_Cost;            //El costo asociado a la heurística del algoritmo de pathfinding
+    public float f_Cost;            //El costo Final de este nodo, el cual es g_Cost + h_Cost
 
     public float fTerrainCost;      //El costo en sí de pararse en este nodo
 
@@ -326,7 +326,7 @@ public class ClassGrid
 
                 //Si no lo contiene, entonces lo agregamos a la lista Abierta
                 neighbor.Parent = currentNode;
-
+                 
                 int dist = GetDistance(neighbor, EndNode);
                 Debug.Log("dist between: " + neighbor.x + ", " + neighbor.y + " and goal is: " + dist);
 
@@ -357,6 +357,7 @@ public class ClassGrid
         PriorityQueue OpenList = new PriorityQueue();
         List<Node> ClosedList = new List<Node>();
 
+        StartNode.g_Cost = 0;
         OpenList.Add(StartNode);
 
         while (OpenList.Count > 0)
@@ -428,6 +429,97 @@ public class ClassGrid
         return null;
     }
 
+    public List<Node> AStarSearch(int in_startX, int in_startY, int in_endX, int in_endY)
+    {
+
+        Node StartNode = GetNode(in_startY, in_startX);
+        Node EndNode = GetNode(in_endY, in_endX);
+
+        if (StartNode == null || EndNode == null)
+        {
+            Debug.LogError("Invalid coordinates in BestFirstSearch");
+            return null;
+        }
+
+        PriorityQueue OpenList = new PriorityQueue();
+        List<Node> ClosedList = new List<Node>();
+
+        StartNode.g_Cost = 0;
+        OpenList.Add(StartNode);
+
+        while (OpenList.Count > 0)
+        {
+            //Mientras haya nodos en la lista abierta, vamos a buscar un camino
+            //Obtenemos el primer nodo de la lista abierta
+            Node currentNode = OpenList.Dequeue();
+            Debug.Log("Current Node is: " + currentNode.x + ", " + currentNode.y);
+
+            //Checamos si llegamos al destino
+            //Por motivos didáctivos sí lo vamos a terminar al llegar al nodo objetivo
+            if (currentNode == EndNode)
+            {
+                //Encontramos un camino.
+                Debug.Log("Camino encontrado");
+
+                //Necesitamos construir ese camino. Para eso hacemos backtracking
+                List<Node> path = Backtrack(currentNode);
+                EnumeratePath(path);
+
+                return path;
+            }
+
+            //Checamos si ya está en la lista cerrada
+            //NOTA: Aquí VOLVEREMOS DESPUÉS 27 de febrero 2023
+            if (ClosedList.Contains(currentNode))
+            {
+                continue;
+            }
+
+            ClosedList.Add(currentNode);
+
+            //Vamos a visitar a todos sus vecinos
+            List<Node> currentNeighbors = GetNeighbors(currentNode);
+
+            foreach (Node neighbor in currentNeighbors)
+            {
+                if (ClosedList.Contains(neighbor))
+                    continue; //podríamos cambiar esto de ser necesario
+
+
+                float fCostoTentativo = neighbor.fTerrainCost + currentNode.g_Cost;
+
+                //Si no lo contiene, entonces lo agregamos a la lista Abierta
+                //Si ya están en la lista abierta, hay que dejar solo la versión de 
+                //ese nodo con el menor costo
+                if (OpenList.Contains(neighbor))
+                {
+                    //Checamos si este neighbor tiene un costo MENOR que el que ya está en la lista abierta
+                    if (fCostoTentativo < neighbor.g_Cost)
+                    {
+                        //Entonces lo tenemos que reemplazar en la lista abierta
+                        OpenList.Remove(neighbor);
+                    }
+                    else
+                    {
+                        continue; //Vete al nodo vecino que siga
+                    }
+                }
+
+
+                neighbor.Parent = currentNode;
+                neighbor.g_Cost = fCostoTentativo;
+                neighbor.h_Cost = GetDistance(neighbor, EndNode);
+                neighbor.f_Cost = neighbor.g_Cost + neighbor.h_Cost;
+                OpenList.Insert((int)neighbor.f_Cost, neighbor);
+            }
+        }
+
+        Debug.LogError("No path found between start and end.");
+
+        return null;
+    }
+
+
     public Node GetNode(int x, int y)
     {
         //Checamos si las coordenadas dentro de nuestra cuadricula se repitre
@@ -495,9 +587,13 @@ public class ClassGrid
     //Euclidiana (hasta el momento)
     public int GetDistance(Node in_a, Node in_b)
     {
-        int x_diff = (in_a.x - in_b.x);
-        int y_diff = (in_b.y - in_a.y);
-        return (int) Mathf.Sqrt(Mathf.Pow(x_diff, 2) + Mathf.Pow(y_diff, 2));
+        int x_diff = Math.Abs(in_a.x - in_b.x);
+        int y_diff = Math.Abs(in_a.y - in_b.y);
+
+        int xy_diff = Math.Abs(x_diff - y_diff);
+        
+        //DUDA ¿POR QUÉ 14 Y 10?
+        return (14 * Math.Min(x_diff, y_diff) + 10 * xy_diff );
     }
 
     public static TextMesh CreateWorldText(string in_text, Transform in_parent = null,
