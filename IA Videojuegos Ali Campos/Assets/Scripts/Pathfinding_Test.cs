@@ -1,10 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class Pathfinding_Test : MonoBehaviour
 {
-    public Transform t;
+    //public Transform t;
+
+    public int2 StartPosition = int2.zero;
+    public int2 EndPosition = int2.zero;
+
+    public Steering_Behaviors myAgent;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +29,17 @@ public class Pathfinding_Test : MonoBehaviour
         //No hay camino (test)
         //myTest.BreadthFirstSearch(0, 0, -1, -1);
 
-        myTest.AStarSearch(0, 0, 4, 4);
+        //myTest.AStarSearch(0, 1, 4, 0);
+
+        List<Node> Pathfinding_result = myTest.AStarSearch(StartPosition.x, StartPosition.y, EndPosition.x, EndPosition.y);
+        List<Vector3> WorldPositionPathfinding = new List<Vector3>();
+
+        foreach(Node n in Pathfinding_result)
+        {
+            WorldPositionPathfinding.Add(myTest.GetWorldPosition(n.x, n.y));
+        }
+
+        //myAgent.Función() para asignarle la ruta a seguir al agente de pathfinding
     }
 
     // Update is called once per frame

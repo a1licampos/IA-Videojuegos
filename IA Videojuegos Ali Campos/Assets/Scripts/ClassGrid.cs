@@ -122,8 +122,8 @@ public class ClassGrid
     public List<Node> DepthFirstSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
 
-        Node StartNode = GetNode(in_startY, in_startX);
-        Node EndNode = GetNode(in_endY, in_endX);
+        Node StartNode = GetNode(in_startX, in_startY);
+        Node EndNode = GetNode(in_endX, in_endY);
 
         if(StartNode == null || EndNode == null)
         {
@@ -190,8 +190,8 @@ public class ClassGrid
     public List<Node> BreadthFirstSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
 
-        Node StartNode = GetNode(in_startY, in_startX);
-        Node EndNode = GetNode(in_endY, in_endX);
+        Node StartNode = GetNode(in_startX, in_startY);
+        Node EndNode = GetNode(in_endX, in_endY);
 
         if (StartNode == null || EndNode == null)
         {
@@ -274,8 +274,8 @@ public class ClassGrid
     public List<Node> BestFirstSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
 
-        Node StartNode = GetNode(in_startY, in_startX);
-        Node EndNode = GetNode(in_endY, in_endX);
+        Node StartNode = GetNode(in_startX, in_startY);
+        Node EndNode = GetNode(in_endX, in_endY);
 
         if (StartNode == null || EndNode == null)
         {
@@ -345,8 +345,8 @@ public class ClassGrid
     public List<Node> DjikstraSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
 
-        Node StartNode = GetNode(in_startY, in_startX);
-        Node EndNode = GetNode(in_endY, in_endX);
+        Node StartNode = GetNode(in_startX, in_startY);
+        Node EndNode = GetNode(in_endX, in_endY);
 
         if (StartNode == null || EndNode == null)
         {
@@ -432,8 +432,8 @@ public class ClassGrid
     public List<Node> AStarSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
 
-        Node StartNode = GetNode(in_startY, in_startX);
-        Node EndNode = GetNode(in_endY, in_endX);
+        Node StartNode = GetNode(in_startX, in_startY);
+        Node EndNode = GetNode(in_endX, in_endY);
 
         if (StartNode == null || EndNode == null)
         {
@@ -512,6 +512,9 @@ public class ClassGrid
                 neighbor.f_Cost = neighbor.g_Cost + neighbor.h_Cost;
                 OpenList.Insert((int)neighbor.f_Cost, neighbor);
             }
+
+            foreach (Node n in OpenList.Nodes)
+                Debug.Log("n Node is: " + n.x + ", " + n.y + ", value= " + n.f_Cost);
         }
 
         Debug.LogError("No path found between start and end.");
