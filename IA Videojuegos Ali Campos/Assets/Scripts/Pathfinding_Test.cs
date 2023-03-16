@@ -12,10 +12,19 @@ public class Pathfinding_Test : MonoBehaviour
 
     public Steering_Behaviors myAgent;
 
+    public ClassGrid myGrid;
+
+    private void Awake()
+    {
+        myGrid = new ClassGrid(5, 5);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         ClassGrid myTest = new ClassGrid(5, 5);
+
+
         //myTest.DepthFirstSearch(0, 0, 4, 4);
         //myTest.BestFirstSearch(0, 0, 2, 0);
 

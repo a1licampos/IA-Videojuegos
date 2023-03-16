@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - WayPoint
   - Creator
+  - grid
   layers:
   - Default
   - TransparentFX

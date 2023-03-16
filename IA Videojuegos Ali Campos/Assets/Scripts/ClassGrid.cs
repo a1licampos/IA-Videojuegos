@@ -630,6 +630,11 @@ public class ClassGrid
         return new Vector3(x, y) * fTileSize + v3OriginPosition;
     }
 
+    public Vector3 GetTilePosition(float x, float y)
+    {
+        return new Vector3(x, y) / fTileSize + v3OriginPosition;
+    }
+
     //Enumera un camino en el orden que tienen y lo muestra en los debugTextArray
     public void EnumeratePath(List<Node> in_path)
     {
@@ -641,6 +646,26 @@ public class ClassGrid
                                             + Environment.NewLine + "step: "
                                             + iCounter.ToString();
         }
+    }
+
+    //Función que convierte una lista de nodos a una lista de puntos en espacio de mundo
+    public List<Vector3> ConvertBacktrackToWorldPos(List<Node> in_path, bool in_shiftToMiddle = true)
+    {
+        List<Vector3> WorldPositionPoints = new List<Vector3>();
+
+        //Convertimos cada nodo dentro de in_path a una posición en el espacio de mundo
+        foreach(Node n in in_path)
+        {
+            Vector3 position = GetWorldPosition(n.x, n.y);
+            if(in_shiftToMiddle)
+            {
+                position += new Vector3(fTileSize * 0.5f, fTileSize * 0.5f, 0.0f);
+            }
+
+            WorldPositionPoints.Add(position);
+        }
+
+        return WorldPositionPoints;
     }
 }
 
