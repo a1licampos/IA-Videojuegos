@@ -10,6 +10,40 @@ public class Edge
     public float fCost;
 }
 
+//INTENTO DE COLOCAR CORUTINAS
+//Referencia
+//https://forum.unity.com/threads/how-to-write-coroutines-inside-of-classes.442146/
+/*
+public class CoRunner : MonoBehaviour
+{
+    //Atributos
+    private static CoRunner instance;
+
+    public static CoRunner Instance
+    {
+        get
+        {
+            if (instance == null)
+                instance = new CoRunner();
+
+            return instance;
+        }
+
+        set { instance = value; }
+    }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public void Run(IEnumerator cor)
+    {
+        StartCoroutine(cor);
+    }
+}
+*/
+
 //Se puede manejar como un tipo de dato estandar, directamente en memoria
 public class Node
 {
@@ -40,6 +74,14 @@ public class Node
         this.bWalkable = true;
     }
 
+    public void InitNode()
+    {
+        this.Parent = null;
+        this.g_Cost = int.MaxValue;
+        this.f_Cost = int.MaxValue;
+        this.h_Cost = int.MaxValue;
+    }
+
     public override string ToString()
     {
         return x.ToString() + ", " + y.ToString();
@@ -51,7 +93,8 @@ public class Graph
     public List<Node> Nodes;
 }
 
-public class ClassGrid 
+
+public class ClassGrid
 {
     public int iHeight = 10;
     public int iWidth = 10;
@@ -114,6 +157,17 @@ public class ClassGrid
             for (int x = 0; x < iWidth; x++)
             {
                 Nodes[y, x] = new Node(x, y);
+            }
+        }
+    }
+
+    public void ResetGrid()
+    {
+        for (int y = 0; y < iHeight; y++)
+        {
+            for (int x = 0; x < iWidth; x++)
+            {
+                Nodes[y, x].InitNode();
             }
         }
     }
@@ -431,7 +485,6 @@ public class ClassGrid
 
     public List<Node> AStarSearch(int in_startX, int in_startY, int in_endX, int in_endY)
     {
-
         Node StartNode = GetNode(in_startX, in_startY);
         Node EndNode = GetNode(in_endX, in_endY);
 
@@ -440,6 +493,9 @@ public class ClassGrid
             Debug.LogError("Invalid coordinates in BestFirstSearch");
             return null;
         }
+
+        //Po si las dudas, pero podría haber ocasiones en las que sería mejor No hacerlo.
+        ResetGrid();
 
         PriorityQueue OpenList = new PriorityQueue();
         List<Node> ClosedList = new List<Node>();
@@ -463,7 +519,14 @@ public class ClassGrid
 
                 //Necesitamos construir ese camino. Para eso hacemos backtracking
                 List<Node> path = Backtrack(currentNode);
+                OpenListColor(OpenList.Nodes);      //Cambiamos el color de la lista abierta a verde
+                                                    //CoRunner.Instance.Run(Blue(ClosedList)); (INTENTO DE USAR CORRUTINAS LLAMANDOLAS DESDE OTRA CLASE)
                 EnumeratePath(path);
+                ClosedListColor(ClosedList);        //Cambiamos el color de la lita cerrada a azul
+
+                //Limpiar listas
+                OpenList.Nodes.Clear();
+                ClosedList.Clear();
 
                 return path;
             }
@@ -635,16 +698,85 @@ public class ClassGrid
         return new Vector3(x, y) / fTileSize + v3OriginPosition;
     }
 
-    //Enumera un camino en el orden que tienen y lo muestra en los debugTextArray
+    //Reestablecemos el color y el texto del grid
+    public void RebootGridColor()
+    {
+        //Recorremos toda la lista de nodos y reestablecemos valores
+        for (int y = 0; y < iHeight; y++)
+        {
+            for (int x = 0; x < iWidth; x++)
+            {
+                debugTextArray[y, x].text = Nodes[y, x].ToString();
+                debugTextArray[y, x].color = Color.white;
+                debugTextArray[y, x].characterSize = 1f;
+            }
+        }
+    }
+
+    //Colorear la lista abierta de VERDE
+    public void OpenListColor(List<Node> in_OpenList)
+    {
+        foreach(Node n in in_OpenList)
+        {
+            debugTextArray[n.y, n.x].text = n.ToString()
+                                    + Environment.NewLine + "g:" + (n.g_Cost).ToString()
+                                    + "  h:" + (n.h_Cost).ToString()
+                                    + "  f:" + (n.f_Cost).ToString();
+
+            debugTextArray[n.y, n.x].alignment = TextAlignment.Center;
+            debugTextArray[n.y, n.x].characterSize = 0.5f;
+            debugTextArray[n.y, n.x].color = Color.green;
+        }
+    }
+
+    //Colorear la lista cerrada de AZUL
+    public void ClosedListColor(List<Node> in_ClosedList)
+    {
+        foreach (Node n in in_ClosedList)
+        {
+            debugTextArray[n.y, n.x].color = Color.blue;
+        }
+    }
+
+    //PREGUNTAR AL PROFESOR
+    //IEnumerator Blue(List<Node> in_ClosedList)
+    //{
+    //    foreach (Node n in in_ClosedList)
+    //    {
+    //        yield return new WaitForSeconds(2f);
+    //        Debug.LogWarning("Ok next...");
+
+    //        debugTextArray[n.y, n.x].color = Color.blue;
+    //    }
+    //}
+
+    //Enumera un camino en el orden que tienen muestra en los debugTextArray, g_cost, h_cost y f_cost,
+    //además de pintar el camino de ROJO
     public void EnumeratePath(List<Node> in_path)
     {
         int iCounter = 0;
         foreach(Node n in in_path)
         {
             iCounter++;
-            debugTextArray[n.y, n.x].text = n.ToString()
-                                            + Environment.NewLine + "step: "
-                                            + iCounter.ToString();
+            if(iCounter == 1)   //Como en el video de muestra el inicio del pathfing no tiene valores de g, h, f
+            {
+                debugTextArray[n.y, n.x].text = n.ToString()
+                                                + Environment.NewLine + "Step: "
+                                                + iCounter.ToString();
+            }
+            else                //Apartir de aquí imprimimos los valores de g, h y f en la cudricula del las listas, cerradas y abiertas
+            {
+                debugTextArray[n.y, n.x].text = n.ToString()
+                                                + Environment.NewLine + "g:" + (n.g_Cost).ToString()
+                                                + "  h:" + (n.h_Cost).ToString()
+                                                + "  f:" + (n.f_Cost).ToString()
+                                                + Environment.NewLine + "Step: "
+                                                + iCounter.ToString();
+            }
+
+            debugTextArray[n.y, n.x].alignment = TextAlignment.Center;
+            debugTextArray[n.y, n.x].characterSize = 0.5f;
+            debugTextArray[n.y, n.x].color = Color.red;
         }
     }
 

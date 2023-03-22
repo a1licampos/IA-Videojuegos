@@ -14,6 +14,7 @@ public class Pathfinding_Test : MonoBehaviour
 
     public ClassGrid myGrid;
 
+
     private void Awake()
     {
         myGrid = new ClassGrid(5, 5);
@@ -22,7 +23,8 @@ public class Pathfinding_Test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ClassGrid myTest = new ClassGrid(5, 5);
+        //CLASE
+        //ClassGrid myTest = new ClassGrid(5, 5);
 
 
         //myTest.DepthFirstSearch(0, 0, 4, 4);
@@ -40,13 +42,16 @@ public class Pathfinding_Test : MonoBehaviour
 
         //myTest.AStarSearch(0, 1, 4, 0);
 
-        List<Node> Pathfinding_result = myTest.AStarSearch(StartPosition.x, StartPosition.y, EndPosition.x, EndPosition.y);
-        List<Vector3> WorldPositionPathfinding = new List<Vector3>();
 
-        foreach(Node n in Pathfinding_result)
-        {
-            WorldPositionPathfinding.Add(myTest.GetWorldPosition(n.x, n.y));
-        }
+        //PRUEBA CLASE
+        //List<Node> Pathfinding_result = myTest.AStarSearch(StartPosition.x, StartPosition.y, EndPosition.x, EndPosition.y);
+        //List<Vector3> WorldPositionPathfinding = new List<Vector3>();
+
+        //foreach (Node n in Pathfinding_result)
+        //{
+        //    WorldPositionPathfinding.Add(myTest.GetWorldPosition(n.x, n.y));
+        //}
+
 
         //myAgent.Función() para asignarle la ruta a seguir al agente de pathfinding
     }
@@ -56,6 +61,5 @@ public class Pathfinding_Test : MonoBehaviour
     {
         
     }
-
 
 }
