@@ -31,12 +31,12 @@ public class PatrolState : BaseState
 
         while (true)
         {
-            //Esperamos n segundos antes de ejecutar el codigo siguinete
+            //Esperamos n segundos antes de ejecutar el siguinete codigo
             yield return RotateIntervalWait;
 
             //Rotamos a nuestro agente patrullero especto al eje de "arriba"
             _sm.transform.Rotate(_sm.transform.up, _sm.FRotateAngle);
-
+            //Debug.LogWarning("VUELTA");
         }
 
     }
@@ -47,12 +47,16 @@ public class PatrolState : BaseState
         _sm.ResetAnimations();
         _sm.mAnimator.SetBool("standing", true);    // Comienza la animacion de buscar objetivo
         RotateCoroutineRef = _sm.StartCoroutine(this.Rotate());
+
+        //Luz rango de vision
+        _sm.mLinter.range = _sm.fVisionDist + 2;
+        _sm.mLinter.spotAngle = _sm.fVisionAngle + 10;
     }
 
     public override void Exit()
     {
         //base.Exit();
-        _sm.StopCoroutine(Rotate());
+        _sm.StopCoroutine(RotateCoroutineRef);
     }
 
     public override void UpdateLogic()
@@ -69,7 +73,6 @@ public class PatrolState : BaseState
     public override void UpdatePhysics()
     {
         //base.UpdatePhysics();
-
         bool bCheckVision = _sm.CheckVFieldOfVision(_sm.fVisionDist, _sm.fVisionAngle, out Vector3 tmp_TargetPosition);
 
         if (bCheckVision)

@@ -31,6 +31,9 @@ public class AttackState : BaseState
         fCurrentChaseTime = 0.0f;
         bGoingBackToPatrolPos = false;
         _sm.navMeshAgent.destination = _sm.v3TargetTransform.position;
+
+        _sm.ResetAnimations();
+        _sm.mAnimator.SetBool("attack", true);    // Comienza la animacion de buscar objetivo
     }
 
     private void CheckPersecutionTime()
@@ -49,10 +52,17 @@ public class AttackState : BaseState
         //Se ejecuta hasta que llegue a la posicion, y una vez lo hace, vuelve al estado de patrullaje
         float fDist = (_sm.transform.position - _sm.v3AgentPatrollingPosition).magnitude;
 
+        _sm.ResetAnimations();
+        _sm.mAnimator.SetBool("forward", true);
+
         if(fDist <= 1.0f)
         {
             _sm.navMeshAgent.destination = _sm.transform.position;
             _sm.ChangeState(_sm.patrolState);
+
+            //_sm.ResetAnimations();
+            //_sm.mAnimator.SetBool("forward", true);
+
             return;
         }
     }

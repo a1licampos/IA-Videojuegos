@@ -15,12 +15,21 @@ public class FieldOfViewEditor : Editor
         float fTmpAngle = FOVref.fVisionAngle;
         float fTmpDist = FOVref.fVisionDist;
 
+        FOVref.mLinter.range = FOVref.fVisionDist + 2;
+        FOVref.mLinter.spotAngle = FOVref.fVisionAngle + 10;
+
+        //FOVref.goLinter.transform.rotation = Quaternion.Euler(30f, 0f, 0f);
+
         //Si estamos en el de Alerta, sobrescribimos los valores por los del estado de alerta.
         //OJO AQUÍ CON EL OPERADOR DE '?' que nos está haciendo el chequo ante el null.
-        if(FOVref.CurrentState?.name == "Alert")
+        if (FOVref.CurrentState?.name == "Alert")
         {
-            fTmpAngle = FOVref.fAlertVisionAngle;
-            fTmpDist = FOVref.fAlertVisionDist;
+            fTmpAngle = FOVref.FAlertVisionAngle;
+            fTmpDist = FOVref.FAlertVisionDist;
+
+            FOVref.mLinter.range = FOVref.FAlertVisionDist + 2;
+            FOVref.mLinter.spotAngle = FOVref.FAlertVisionAngle + 10;
+            //FOVref.goLinter.transform.rotation = Quaternion.Euler(12f, 0f, 0f);
         }
 
         Handles.color = Color.white;

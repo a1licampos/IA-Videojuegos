@@ -38,6 +38,10 @@ public class AlertState : BaseState
         fTotalTimeBeforeGoing = 0.0f;
         bCheckingLastKnowPos = AlertStep.preparingToGo;
 
+        //Luz visión
+        _sm.mLinter.range = _sm.FAlertVisionDist + 2;
+        _sm.mLinter.spotAngle = _sm.FAlertVisionAngle + 10;
+
         _sm.ResetAnimations();
     }
 
@@ -100,7 +104,7 @@ public class AlertState : BaseState
 
         if(CheckFOV)
         {
-            Debug.Log("EY!" + fTotalTimeTargetHasBeenOnFOV);
+            //Debug.Log("EY!" + fTotalTimeTargetHasBeenOnFOV);
             fTotalTimeTargetHasBeenOnFOV += Time.fixedDeltaTime;
         }
         

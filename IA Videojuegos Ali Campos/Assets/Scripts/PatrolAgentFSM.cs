@@ -94,12 +94,13 @@ public class PatrolAgentFSM : StateMachine
 
     //Ligths
     public Light mLinter;
+    public GameObject goLinter;
 
     public bool CheckVFieldOfVision(float in_fVisionDist, float in_fVisionAngle, out Vector3 v3TargetPos)
     {
         v3TargetPos = Vector3.zero;
-        //La comprobaci�n de 2 chequeos, uno similar al chequep del area de un circulo.
-        //y otro que es respecto al �nfulo de ese circulo
+        //La comprobacion de 2 chequeos, uno similar al chequep del area de un circulo.
+        //y otro que es respecto al angulo de ese circulo
 
         //OJO: Cual de estas dos comprobaciones deberia realizarse primero en terminos de
         //desempeño (performance)
@@ -115,7 +116,7 @@ public class PatrolAgentFSM : StateMachine
 
         if(Vector3.Angle(v3AgentToTarget, transform.forward) > in_fVisionAngle * 0.5)
         {
-            //Nos salimos porque no esta dentro del �ngulo que define al cono.
+            //Nos salimos porque no esta dentro del angulo que define al cono.
             return false;
         }
 
@@ -151,8 +152,12 @@ public class PatrolAgentFSM : StateMachine
         //Si ustedes no desearan este comportamiento, favor de cambiarla esta linea;
         v3AgentPatrollingPosition = transform.position;
 
+        //
         mLinter.range = fVisionDist + 2;
         mLinter.spotAngle = fVisionAngle + 10;
+        //goLinter.transform.rotation = Quaternion.Euler(30f, 0f, 0f);
+        //goLinter.transform.Rotate(30 * Vector3.left, Space.World);
+        //goLinter.transform.rotation =  Quaternion.RotateTowards(goLinter.transform.rotation, Quaternion.Euler(30, 0, 0), 5f * Time.deltaTime);
     }
 
     protected override BaseState GetInitialState()
