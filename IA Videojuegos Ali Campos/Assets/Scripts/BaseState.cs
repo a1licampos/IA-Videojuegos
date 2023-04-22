@@ -31,8 +31,10 @@ public class BaseState
 
     public virtual void Exit() { }
 
+    //Update
     public virtual void UpdateLogic() { }
 
+    //FixedUpdate
     public virtual void UpdatePhysics() { }
 
 }

@@ -7,7 +7,11 @@ public class StateMachine : MonoBehaviour
     //Referencia al estado actual de la máquina.
     BaseState currentState;
 
-    //
+    //Función get para que otros scrips puedan saber en ´qué estado se encuentra la máquina de estados
+    public BaseState CurrentState
+    {
+        get { return currentState; }
+    }
     
      
     // Start is called before the first frame update
