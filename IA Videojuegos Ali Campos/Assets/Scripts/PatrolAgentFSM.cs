@@ -89,6 +89,22 @@ public class PatrolAgentFSM : StateMachine
         get { return fMaxChasingTime; }
     }
 
+    //Velocidad del agente patrullero normal
+    [Range(2.0f, 5.0f)]
+    [SerializeField] private float fSpeedNormal = 5.0f;
+    public float FSpeedNormal
+    {
+        get { return fSpeedNormal; }
+    }
+
+    //Velocidad del agente patrullero cuando ataca
+    [Range(4.0f, 10.0f)]
+    [SerializeField] private float fSpeedAttack = 5.0f;
+    public float FSpeedAttack
+    {
+        get { return fSpeedAttack; }
+    }
+
     //Animator
     public Animator mAnimator;
 

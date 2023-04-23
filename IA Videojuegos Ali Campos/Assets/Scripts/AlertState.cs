@@ -66,6 +66,7 @@ public class AlertState : BaseState
                 bCheckingLastKnowPos = AlertStep.going;
                 _sm.navMeshAgent.SetDestination(_sm.v3LastKnowTargetPos);
                 _sm.mAnimator.SetBool("forward", true);
+                _sm.mAnimator.speed = 4;
             }
         }
 
@@ -74,7 +75,7 @@ public class AlertState : BaseState
         {
             float vDist = (_sm.transform.position - _sm.v3LastKnowTargetPos).magnitude;
 
-            if(vDist <= 1.0f)
+            if (vDist <= 1.0f)
             {
                 //Entonces ya llegó. Tiene que dar unos vistazos, y luego regresar a su posición de patrullaje.
                 bCheckingLastKnowPos = AlertStep.goingBack;
@@ -82,6 +83,7 @@ public class AlertState : BaseState
 
                 //Regresa a su posicion de patrullaje
                 _sm.navMeshAgent.SetDestination(_sm.v3AgentPatrollingPosition);
+                _sm.mAnimator.speed = 1;
                 _sm.mAnimator.SetBool("forward", true);
             }
         }
@@ -95,7 +97,9 @@ public class AlertState : BaseState
                 //Entonces ya llegó a su posicion de patrullaje y debe de regresar al estado de patrullaje
                 bCheckingLastKnowPos = AlertStep.finished;
 
+                Debug.Log("Changing to Patrol State");
                 _sm.ChangeState(_sm.patrolState);
+
                 return;
             }
         }
@@ -111,7 +115,7 @@ public class AlertState : BaseState
 
         if(fTotalTimeTargetHasBeenOnFOV > _sm.FTimeToGoFromAlertToAttack)
         {
-            Debug.Log("Changing to AttackState");
+            Debug.Log("Changing to Attack State");
             _sm.ChangeState(_sm.attackState);
 
             return;

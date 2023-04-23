@@ -79,6 +79,8 @@ public class PatrolState : BaseState
         {
             _sm.v3LastKnowTargetPos = tmp_TargetPosition;
             _sm.mAnimator.SetBool("standing", false);   // Termina la animacion de buscar objetivo
+
+            Debug.Log("Changing to Alert State");
             _sm.ChangeState(_sm.alertState);
 
             return; //Para asegurarnos que salga de esta función, pues ya se disparó un cambio de estado.

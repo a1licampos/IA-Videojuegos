@@ -31,9 +31,11 @@ public class AttackState : BaseState
         fCurrentChaseTime = 0.0f;
         bGoingBackToPatrolPos = false;
         _sm.navMeshAgent.destination = _sm.v3TargetTransform.position;
+        _sm.navMeshAgent.speed = _sm.FSpeedAttack;
 
         _sm.ResetAnimations();
         _sm.mAnimator.SetBool("attack", true);    // Comienza la animacion de buscar objetivo
+        _sm.mAnimator.speed = 2;
     }
 
     private void CheckPersecutionTime()
@@ -58,6 +60,8 @@ public class AttackState : BaseState
         if(fDist <= 1.0f)
         {
             _sm.navMeshAgent.destination = _sm.transform.position;
+
+            Debug.Log("Changing to Patrol State");
             _sm.ChangeState(_sm.patrolState);
 
             //_sm.ResetAnimations();
@@ -70,6 +74,8 @@ public class AttackState : BaseState
     public override void Exit()
     {
         //base.Exit();
+        _sm.navMeshAgent.speed = _sm.FSpeedAttack;
+        _sm.mAnimator.speed = 1;
     }
 
     public override void UpdateLogic()
