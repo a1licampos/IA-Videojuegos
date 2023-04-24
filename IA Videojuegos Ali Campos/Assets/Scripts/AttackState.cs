@@ -36,6 +36,8 @@ public class AttackState : BaseState
         _sm.ResetAnimations();
         _sm.mAnimator.SetBool("attack", true);    // Comienza la animacion de buscar objetivo
         _sm.mAnimator.speed = 2;
+
+        _sm.mLinter.color = Color.red;  // Cambiamos el color de la luz
     }
 
     private void CheckPersecutionTime()

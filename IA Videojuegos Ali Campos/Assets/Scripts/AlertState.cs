@@ -43,6 +43,8 @@ public class AlertState : BaseState
         _sm.mLinter.spotAngle = _sm.FAlertVisionAngle + 10;
 
         _sm.ResetAnimations();
+
+        _sm.mLinter.color = Color.yellow; // Cambiamos el color de la luz
     }
 
     public override void Exit()

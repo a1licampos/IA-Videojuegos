@@ -51,6 +51,7 @@ public class PatrolState : BaseState
         //Luz rango de vision
         _sm.mLinter.range = _sm.fVisionDist + 2;
         _sm.mLinter.spotAngle = _sm.fVisionAngle + 10;
+        _sm.mLinter.color = Color.white;
     }
 
     public override void Exit()
